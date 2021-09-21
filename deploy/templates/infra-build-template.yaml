@@ -1,0 +1,24 @@
+parameters:
+  - name: vmImage
+    type: string
+
+jobs:
+- job: 'Build'
+  displayName: 'Build infra'
+  pool:
+    vmImage: ${{ parameters.vmImage }}
+  steps:    
+  
+  - task: PowerShell@2
+    displayName: Validate Bicep file
+    inputs:
+      targetType: inline
+      script: 'az bicep build --file infra.bicep'
+      workingDirectory: '$(Build.SourcesDirectory)/infra'
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publish infra artifact
+    inputs:
+      targetPath: '$(Build.SourcesDirectory)/infra'
+      artifact: 'infra'
+      publishLocation: 'pipeline'

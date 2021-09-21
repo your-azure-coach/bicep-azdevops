@@ -1,0 +1,28 @@
+parameters:
+  - name: serviceConnection
+    type: string
+  - name: environment
+    type: string
+  - name: vmImage
+    type: string
+
+jobs:
+  - deployment: Deploy
+    displayName: 'Deploy infra'
+    pool:
+      vmImage: ${{ parameters.vmImage }}
+    environment:
+      name: ${{ parameters.environment }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - task: AzureCLI@2
+            displayName: 'Deploy infra'
+            inputs:
+              azureSubscription: '${{ parameters.serviceConnection }}'
+              scriptType: 'pscore'
+              scriptPath: '$(Pipeline.Workspace)/infra/_infra.ps1'
+              arguments: -environment ${{ parameters.environment }}
+              workingDirectory: '$(Pipeline.Workspace)/infra'

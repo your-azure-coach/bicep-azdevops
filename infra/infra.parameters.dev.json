@@ -1,0 +1,25 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "env": {
+      "value": "dev"
+    },
+    "resourcePrefix": {
+      "value": "yac"
+    },
+    "appName": {
+      "value": "bicepdemo"
+    },
+    "storageAccountSku": {
+      "value": "Standard_LRS"
+    },
+    "appServicePlanSku": {
+      "value": "F1"
+    },
+    "location": {
+      "value": "westeurope"
+    }
+  }
+}
+

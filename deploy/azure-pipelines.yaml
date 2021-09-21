@@ -1,0 +1,53 @@
+trigger:
+- master
+- main
+- develop
+- release/*
+- hotfix/*
+
+variables:
+  vmImage: 'windows-latest'
+  devServiceConnectionName : 'yourazurecoach-nonprod-devops'
+  tstServiceConnectionName : 'yourazurecoach-nonprod-devops'
+  prdServiceConnectionName : 'yourazurecoach-prod-devops'
+
+stages:
+- stage: 'Build'
+  displayName: 'Build'
+  jobs:
+    - template: templates/infra-build-template.yaml
+      parameters:
+        vmImage: '${{ variables.vmImage }}'
+        
+- stage: 'Dev'
+  displayName: 'Deploy to Dev'
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+    - template: templates/infra-deploy-template.yaml
+      parameters:
+        serviceConnection: '${{ variables.devServiceConnectionName }}'
+        environment: 'dev'
+        vmImage: '${{ variables.vmImage }}'
+
+- stage: 'Test'
+  displayName: 'Deploy to Test'
+  dependsOn: Dev
+  condition: succeeded()
+  jobs:
+    - template: templates/infra-deploy-template.yaml
+      parameters:
+        serviceConnection: '${{ variables.tstServiceConnectionName }}'
+        environment: 'tst'
+        vmImage: '${{ variables.vmImage }}'
+
+- stage: 'Prd'
+  displayName: 'Deploy to Prd'
+  dependsOn: Test
+  condition: succeeded()
+  jobs:
+    - template: templates/infra-deploy-template.yaml
+      parameters:
+        serviceConnection: '${{ variables.prdServiceConnectionName }}'
+        environment: 'prd'
+        vmImage: '${{ variables.vmImage }}'
