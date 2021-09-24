@@ -66,3 +66,12 @@ var keyVaultSoftDelete = env == 'prd' ? true : false
 * Show script
 
 * Run script
+
+TODO
+
+## Improvements
+
+* Add conditions
+* Add loops
+* Add module (with deployment name)
+* Add infra vs app pipeline
