@@ -9,7 +9,7 @@ on:
     
 name: Build 
 jobs:
-  Build Infra:
+  Build_Infra:
     runs-on: ubuntu-latest
     steps:
       - name: Build Infra
