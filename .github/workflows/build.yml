@@ -9,9 +9,12 @@ on:
     
 name: Build 
 jobs:
-  Build_Infra:
+  Build:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code 
+        uses: actions/checkout@main
+        
       - name: Build Infra
         uses: ./.github/workflows/templates/build-infra-steps.yml
         with:
