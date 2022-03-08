@@ -3,6 +3,8 @@ name: Deploy Azure Infrastructure
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./infra
     steps:
 
       # Checkout code
@@ -20,5 +22,6 @@ jobs:
       uses: Amadevus/pwsh-script@v2.0.1
       with:
         # PowerShell script to execute in Actions-hydrated context
-        script: infra/_infra.ps1 -environment dev
+        script: _infra.ps1 -environment dev
+        
 
