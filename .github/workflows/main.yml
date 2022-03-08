@@ -20,7 +20,7 @@ jobs:
 
     - name: PowerShell script
       shell: pwsh
-      run: _infra.ps1 -environment dev
+      run: ./infra/_infra.ps1 -environment dev
       working-directory: ./infra
         
         
