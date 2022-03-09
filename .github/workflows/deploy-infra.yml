@@ -9,6 +9,7 @@ name: Deploy Infra
 jobs:
   Build:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     steps:
     
     - name: Download infra artifact
