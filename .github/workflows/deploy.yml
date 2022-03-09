@@ -4,18 +4,30 @@ on:
       environment:
         required: true
         type: string
-    
+        
+name: Deploy 
 jobs:
-
   deploy-infra:
     name: Deploy Infra
-    uses: ./.github/workflows/deploy-infra.yml
-    with:
-      environment: ${{ inputs.environment }}
-      
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }} 
+    steps:
+    - name: Download infra artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: infra
+    
+    - name: Log into Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_MVP_SUBSCRIPTION_CREDENTIALS }}
+
   deploy-app:
     name: Deploy App
-    needs: deploy-infra
-    uses: ./.github/workflows/deploy-app.yml
-    with:
-      environment: ${{ inputs.environment }} 
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }} 
+    steps:
+    - name: Download app artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: app
