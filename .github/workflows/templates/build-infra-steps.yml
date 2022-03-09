@@ -5,12 +5,14 @@ on:
         required: true
         type: string
     
-name: Build App
+name: Build Infra
 jobs:
   Build:
     runs-on: ubuntu-latest
     steps:
-
+    - name: Checkout code 
+      uses: actions/checkout@main
+        
     - name: Validate Bicep File
       shell: pwsh
       run: az bicep build --file ./infra.bicep
