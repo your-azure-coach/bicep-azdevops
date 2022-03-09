@@ -1,0 +1,22 @@
+on: 
+  push:
+    branches:
+    - main
+    
+  pull_request:
+    branches:
+    - main
+       
+name: Build 
+jobs:
+  call-build:
+    name: Build
+    uses: ./.github/workflows/build.yml
+    
+name: Deploy to DEV 
+jobs:
+  call-deploy:
+    name: Deploy
+    uses: ./.github/workflows/deploy.yml
+    with:
+      enviornment: dev
