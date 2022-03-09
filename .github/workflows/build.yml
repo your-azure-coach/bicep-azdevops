@@ -15,8 +15,8 @@ jobs:
     with:
       infraPath: ./infra
       
-  call-build-infra-steps2:
-    name: Build Infra 2
-    uses: ./.github/workflows/build-infra-steps.yml
+  call-build-app-steps:
+    name: Build App
+    uses: ./.github/workflows/build-app-steps.yml
     with:
       infraPath: ./infra  
