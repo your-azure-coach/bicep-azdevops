@@ -1,0 +1,25 @@
+on: 
+  workflow_call:
+    inputs:
+      infraPath:
+        required: true
+        type: string
+    
+name: Build App
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+    
+    - name: Checkout code 
+      uses: actions/checkout@main
+      
+    - name: Install dependencies
+      run: dotnet restore
+      working-directory: ./src
+        
+    - name: Validate Bicep File
+      shell: pwsh
+      run: az bicep build --file ./infra.bicep
+      working-directory: ${{ inputs.infraPath }}
+     
