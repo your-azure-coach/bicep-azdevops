@@ -8,7 +8,8 @@ on:
       infraFolder:
         required: true
         type: string
-        
+
+name: Build        
 jobs:
   build-infra:
     name: Build Infra
