@@ -10,6 +10,7 @@ on:
 name: Build 
 jobs:
   call-build-infra-steps:
+    name: Build Infra
     uses: ./.github/workflows/build-infra-steps.yml
     with:
       infraPath: ./infra
