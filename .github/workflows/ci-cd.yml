@@ -9,14 +9,13 @@ on:
        
 name: Build 
 jobs:
-  call-build:
+  build:
     name: Build
     uses: ./.github/workflows/build.yml
     
-name: Deploy to DEV 
-jobs:
-  call-deploy:
-    name: Deploy
+  deploy-to-dev:
+    name: Deploy to DEV
+    needs: build
     uses: ./.github/workflows/deploy.yml
     with:
-      enviornment: dev
+      environment: dev
