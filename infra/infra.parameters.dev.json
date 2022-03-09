@@ -3,23 +3,16 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "env": {
-      "value": "dev"
-    },
-    "resourcePrefix": {
-      "value": "yac"
-    },
-    "appName": {
-      "value": "bicepdemo"
+        "value": "dev"
     },
     "storageAccountSku": {
-      "value": "Standard_LRS"
+        "value": "Standard_LRS"
     },
     "appServicePlanSku": {
-      "value": "F1"
+        "value": "F1"
     },
     "location": {
-      "value": "westeurope"
+        "value": "westeurope"
+        }
     }
-  }
 }
-

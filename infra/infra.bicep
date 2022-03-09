@@ -1,20 +1,22 @@
-//Define parameters
+targetScope = 'subscription'
+
+/* ########################################## Parameters ########################################### */
 @maxLength(3)
+@description('Provide environment abbreviation')
 param env string
-@maxLength(5)
-param resourcePrefix string
-param appName string
+@description('Provide SKU for storage account')
 @allowed([
+  'Standard_LRS'
+  'Standard_GRS'
+  'Standard_RAGRS'
+  'Standard_ZRS'
   'Premium_LRS'
   'Premium_ZRS'
-  'Standard_GRS'
   'Standard_GZRS'
-  'Standard_LRS'
-  'Standard_RAGRS'
   'Standard_RAGZRS'
-  'Standard_ZRS'
 ])
 param storageAccountSku string
+@description('Provide SKU for app service plan')
 @allowed([
   'F1'
   'D1'
@@ -30,101 +32,106 @@ param storageAccountSku string
   'P1v3'
   'P2v3'
   'P3v3'
+  'I1'
+  'I2'
+  'I3'
+  'I1v2'
+  'I2v2'
+  'I3v2'
 ])
 param appServicePlanSku string
-param location string = resourceGroup().location
+@allowed([
+  'westeurope'
+  'northeurope'
+])
+@description('Provide location for all resources')
+param location string = 'westeurope'
+@description('Provide unique identifier for release')
+param releaseId string = newGuid()
 
-//Define variables
-var prefix = '${resourcePrefix}-${env}-${appName}'
-var storageAccountName = '${replace(prefix, '-', '')}st'
-var appServicePlanName = '${prefix}-plan'
+
+/* ########################################## Variables ############################################ */
+var applicationName = 'document-api'
+var prefix = 'yac-${env}-${applicationName}'
+var resourceGroupName = '${prefix}-rg'
 var appServiceName = '${prefix}-app'
+var appServicePlanName = '${prefix}-app-plan'
+var storageAccountName = '${replace(prefix, '-', '')}st'
+var keyVaultName = '${prefix}-kv'
+var storageAccountConnectionStringSecretName = '${storageAccountName}-connectionstring'
+var blobContainers = [
+  {
+    name: 'manuals'
+    enablePublicAccess: true
+  }
+  {
+    name: 'documents'
+    enablePublicAccess: false
+  }
+]
 
-var secretName = '${storageAccountName}-connectionstring'
-var keyVaultName = '${prefix}-vault'
-var keyVaultSoftDelete = env == 'prd' ? true : false
+
+/* ########################################## Resources ############################################ */
+
+//Describe Resource Group
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01'  = {
+  name: resourceGroupName
+  location: location
+  tags: {
+    environment: env
+    application: applicationName
+    owner: 'toon.vanhoutte@noest.it'
+  }
+}
 
 //Describe Storage Account
-resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
-  name: storageAccountName
-  location: location
-  sku: {
-    name: storageAccountSku
-  }
-  kind:  'StorageV2'
-}
-
-//Describe App Service Plan
-resource appServicePlan 'Microsoft.Web/serverfarms@2020-12-01' = {
-  name: appServicePlanName
-  location: location
-  sku: {
-    name: appServicePlanSku
+module storageAccount 'modules/storageaccount.bicep' = {
+  scope: resourceGroup
+  name: 'storageAccount-${releaseId}'
+  params: {
+    name: storageAccountName
+    sku: storageAccountSku    
+    blobContainers: blobContainers
+    location: location
   }
 }
-
 
 //Describe App Service
-resource appService 'Microsoft.Web/sites@2021-01-15' = {
-  name: appServiceName
-  location: location
-  identity: {
-    type: 'SystemAssigned'
-  }
-  properties: {
-    serverFarmId: appServicePlan.id
+module appService 'modules/appservice.bicep' = {
+  scope: resourceGroup
+  name: 'appService-${releaseId}'
+  params: {
+    name: appServiceName
+    planName: appServicePlanName
+    planSku: appServicePlanSku
+    appSettings: [
+      {
+        name: 'BLOB_CONNECTIONSTRING'
+        value: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}${environment().suffixes.keyvaultDns}/secrets/${storageAccountConnectionStringSecretName}/)'
+      }
+    ]
+    location: location
   }
 }
-
 
 //Describe Key Vault
-resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' = {
-  name: keyVaultName
-  location: location
-  properties: {
-    enableRbacAuthorization: true
-    enableSoftDelete: keyVaultSoftDelete
-    tenantId: subscription().tenantId
-    accessPolicies: [
-    ]
-    sku: {
-      name: 'standard'
-      family: 'A'
+module keyVault 'modules/keyvault.bicep' = {
+  scope: resourceGroup
+  name: 'keyVault-${releaseId}'
+  params: {
+    location: location
+    name: keyVaultName
+    secrets: {
+      '${storageAccountConnectionStringSecretName}' : 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${listKeys('${resourceGroup.id}/providers/Microsoft.Storage/storageAccounts/${storageAccountName}','2019-06-01').keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
     }
-  }
-}
-
-//Add Storage Account connection string to Key Vault
-resource storageSecret 'Microsoft.KeyVault/vaults/secrets@2021-06-01-preview' = {
-  name: secretName
-  parent: keyVault
-  properties: {
-    value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${listKeys('${resourceGroup().id}/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}','2019-06-01').keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
-  }
-}
-
-//Grant the App Service Key Vault Secrets User rights
-resource keyvaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(appService.id, 'Key Vault Secrets User')
-  scope: keyVault
-  properties: {
-    principalId: appService.identity.principalId
-    roleDefinitionId: '${subscription().id}/providers/Microsoft.Authorization/roleDefinitions/4633458b-17de-408a-b874-0445c86b69e6'
-  }
-}
-
-//Configure connection string as a Key Vault reference app setting
-resource appSettings 'Microsoft.Web/sites/config@2021-01-15' = {
-  name: 'appsettings'
-  parent: appService
-  properties: {
-    'BLOB_STORAGE_CONNECTION_STRING' : '@Microsoft.KeyVault(SecretUri=https://${keyVault.name}${environment().suffixes.keyvaultDns}/secrets/${storageSecret.name}/)'
+    roleAssignments: [
+      {
+        roleId: '4633458b-17de-408a-b874-0445c86b69e6'
+        principalId: appService.outputs.identityPrincipalId
+      }
+    ]
   }
   dependsOn: [
-    keyvaultRoleAssignment
+    storageAccount
   ]
 }
-
-
-//Configure outputs
-output appServiceName string = appServiceName

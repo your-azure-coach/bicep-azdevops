@@ -93,28 +93,20 @@ Write-Progress -Status "Completed"
 #region Deploy infra with Bicep file
 Write-Progress -Message "Deploy infrastructure with Bicep" -Status "Started"
 
-    Write-Action -Value "Create resource group"
-    Write-Info -Key "Name" -Value ($resourceGroupName = "$env:resourcePrefix-$env:env-$env:appName-rg")
-    if(!(az group create  `
-        --location $env:location `
-        --name $resourceGroupName `
-        --tags `
-            devOpsUrl=$($env:SYSTEM_COLLECTIONURI)$($env:SYSTEM_TEAMPROJECT)/_build/results?buildId=$($env:BUILD_BUILDID) `
-        --only-show-errors)){ Write-Error "$ExceptionMessage" }
-
     Write-Action -Value "Validate Bicep deployment"
-    if(!(az deployment group what-if  `
-        --resource-group $resourceGroupName `
+    if(!($whatIfResult = az deployment sub what-if  `
         --template-file infra.bicep `
         --parameters "infra.parameters.$environment.json" `
+        --location "$env:location" `
         --no-pretty-print `
         --only-show-errors)){ Write-Error "$ExceptionMessage" }
 
-    Write-Action -Value "Deploy Bicep file to resource group"
-    if(!($deploymentResult = az deployment group create  `
-        --resource-group $resourceGroupName `
+    Write-Action -Value "Deploy Bicep file to subscription"
+    if(!($deploymentResult = az deployment sub create  `
+        --name "infra-$env:releaseId" `
         --template-file infra.bicep `
         --parameters "infra.parameters.$environment.json" `
+        --location "$env:location" `
         --only-show-errors)){ Write-Error "$ExceptionMessage" }
     $result = $deploymentResult | ConvertFrom-Json
     Write-Info -Key "Status" -Value $result.properties.provisioningState
