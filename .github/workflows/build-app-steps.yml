@@ -1,7 +1,7 @@
 on: 
   workflow_call:
     inputs:
-      infraPath:
+      solutionFolder:
         required: true
         type: string
     
@@ -16,10 +16,13 @@ jobs:
       
     - name: Install dependencies
       run: dotnet restore
-      working-directory: ./src
+      working-directory: ${{ inputs.solutionFolder }}
         
-    - name: Validate Bicep File
-      shell: pwsh
-      run: az bicep build --file ./infra.bicep
-      working-directory: ${{ inputs.infraPath }}
+    - name: Build solution
+      run: dotnet build --configuration Release --no-restore
+      working-directory: ${{ inputs.solutionFolder }}
+      
+    - name: Test solution
+      run: dotnet test --no-restore --verbosity normal
+      working-directory: ${{ inputs.solutionFolder }}
      
