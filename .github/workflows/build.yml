@@ -11,12 +11,12 @@ name: Build
 jobs:
   call-build-infra-steps:
     name: Build Infra
-    uses: ./.github/workflows/build-infra-steps.yml
+    uses: ./.github/workflows/build-infra.yml
     with:
       infraFolder: ./infra
       
   call-build-app-steps:
     name: Build App
-    uses: ./.github/workflows/build-app-steps.yml
+    uses: ./.github/workflows/build-app.yml
     with:
       solutionFolder: ./src 
