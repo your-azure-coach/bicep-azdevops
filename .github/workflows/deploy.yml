@@ -10,7 +10,7 @@ jobs:
   deploy-infra:
     name: Deploy Infra
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }} 
+    #environment: ${{ inputs.environment }} 
     steps:
     - name: Download infra artifact
       uses: actions/download-artifact@v3
