@@ -1,0 +1,20 @@
+on:   
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    
+jobs:
+
+  deploy-infra:
+    name: Deploy Infra
+    uses: ./.github/workflows/deploy-infra.yml
+    with:
+      environment: ${{ inputs.environment }}
+      
+  deploy-app:
+    name: Deploy App
+    uses: ./.github/workflows/deploy-app.yml
+    with:
+      environment: ${{ inputs.environment }} 
