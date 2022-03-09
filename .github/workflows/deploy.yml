@@ -24,6 +24,7 @@ jobs:
 
   deploy-app:
     name: Deploy App
+    needs: deploy-infra
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }} 
     steps:
