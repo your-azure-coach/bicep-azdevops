@@ -19,4 +19,4 @@ jobs:
     name: Build App
     uses: ./.github/workflows/build-app-steps.yml
     with:
-      infraPath: ./infra  
+      solutionFolder: ./src 
