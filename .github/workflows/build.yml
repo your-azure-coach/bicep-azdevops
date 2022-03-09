@@ -13,7 +13,7 @@ jobs:
     name: Build Infra
     uses: ./.github/workflows/build-infra-steps.yml
     with:
-      infraPath: ./infra
+      infraFolder: ./infra
       
   call-build-app-steps:
     name: Build App
