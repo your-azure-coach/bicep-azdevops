@@ -15,6 +15,7 @@ jobs:
       
   deploy-app:
     name: Deploy App
+    needs: deploy-infra
     uses: ./.github/workflows/deploy-app.yml
     with:
       environment: ${{ inputs.environment }} 
