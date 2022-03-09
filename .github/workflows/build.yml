@@ -1,16 +1,55 @@
 on:   
   workflow_call:
-    
+    inputs:
+      solutionFolder:
+        required: true
+        type: string
+        
+      infraFolder:
+        required: true
+        type: string
+        
 name: Build 
 jobs:
-  call-build-infra-steps:
+  build-infra:
     name: Build Infra
-    uses: ./.github/workflows/build-infra.yml
-    with:
-      infraFolder: ./infra
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code 
+      uses: actions/checkout@main
+        
+    - name: Validate Bicep File
+      shell: pwsh
+      run: az bicep build --file ./infra.bicep
+      working-directory: ${{ inputs.infraFolder }}
+        
+    - name: Publish infra artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: infra
+        path: ${{ inputs.infraFolder }}
       
-  call-build-app-steps:
+  build-app:
     name: Build App
-    uses: ./.github/workflows/build-app.yml
-    with:
-      solutionFolder: ./src 
+    runs-on: ubuntu-latest
+    steps:    
+    - name: Checkout code 
+      uses: actions/checkout@main
+      
+    - name: Install dependencies
+      run: dotnet restore
+      working-directory: ${{ inputs.solutionFolder }}
+        
+    - name: Build solution
+      run: dotnet build --configuration Release --no-restore --output ./output
+      working-directory: ${{ inputs.solutionFolder }}
+      
+    - name: Test solution
+      run: dotnet test --no-restore --verbosity normal
+      working-directory: ${{ inputs.solutionFolder }}
+     
+    - name: Publish app artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: app
+        path: ${{ inputs.solutionFolder }}/output
