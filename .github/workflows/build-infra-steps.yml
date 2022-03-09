@@ -1,7 +1,7 @@
 on: 
   workflow_call:
     inputs:
-      infraPath:
+      infraFolder:
         required: true
         type: string
     
@@ -16,10 +16,10 @@ jobs:
     - name: Validate Bicep File
       shell: pwsh
       run: az bicep build --file ./infra.bicep
-      working-directory: ${{ inputs.infraPath }}
+      working-directory: ${{ inputs.infraFolder }}
         
     - name: Publish infra artifact
       uses: actions/upload-artifact@v3
       with:
         name: infra
-        path: ${{ inputs.infraPath }}
+        path: ${{ inputs.infraFolder }}
