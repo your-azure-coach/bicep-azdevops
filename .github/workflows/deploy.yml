@@ -8,6 +8,7 @@ on:
 name: Deploy 
 jobs:
   deploy-infra:
+    name: Deploy
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }} 
     steps:
