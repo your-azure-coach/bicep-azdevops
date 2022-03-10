@@ -31,4 +31,4 @@ jobs:
     - name: Download app artifact
       uses: actions/download-artifact@v3
       with:
-        name: app1
+        name: app
