@@ -8,10 +8,10 @@ on:
 name: Deploy 
 jobs:
   deploy-infra:
-    name: Deploy Infra
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }} 
     steps:
+    
     - name: Download infra artifact
       uses: actions/download-artifact@v3
       with:
