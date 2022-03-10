@@ -21,13 +21,12 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
+    - name: Deploy infra with Bicep
+      shell: pwsh
+      run: ./_infra.ps1 -environment dev
+      working-directory: ./infra
 
-  deploy-app:
-    name: Deploy App
-    needs: deploy-infra
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }} 
-    steps:
     - name: Download app artifact
       uses: actions/download-artifact@v3
       with:
