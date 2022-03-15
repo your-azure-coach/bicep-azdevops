@@ -41,5 +41,5 @@ jobs:
     - name: Deploy code to the App
       uses: azure/webapps-deploy@v2
       with: 
-        app-name: yac-${{ inputs.environment }}-bicepdemo-app
+        app-name: yac-${{ inputs.environment }}-document-api-rg
         package: ./app
