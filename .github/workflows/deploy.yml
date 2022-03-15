@@ -37,3 +37,9 @@ jobs:
       with:
         name: app
         path: app
+        
+    - name: Deploy code to the App
+      uses: azure/webapps-deploy@v2
+      with: 
+        app-name: yac-${{ inputs.environment }}-bicepdemo-app
+        package: ./app
