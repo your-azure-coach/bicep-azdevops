@@ -41,5 +41,5 @@ jobs:
     - name: Deploy code to the App
       uses: azure/webapps-deploy@v2
       with: 
-        app-name: yac-${{ inputs.environment }}-document-api-rg
+        app-name: yac-${{ inputs.environment }}-document-api-app
         package: ./app
