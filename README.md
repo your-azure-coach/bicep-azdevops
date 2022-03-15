@@ -2,6 +2,17 @@
 
 This demo showcases how you can create an Azure PaaS solution with Bicep.
 
+MUST HAVE
+- Fix first time deploy
+- Unique id
+- Restart app service
+
+SHOULD HAVE
+- DevOps URL
+- Dynamic name for app service via output
+- Restart app service on first deploy
+
+
 ## Prerequisites
 
 * Have Azure CLI installed
