@@ -17,6 +17,11 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: infra
+        
+    - name: Test
+      shell: pwsh
+      run: az version
+      working-directory: ./infra
     
     - name: Log into Azure
       uses: azure/login@v1
