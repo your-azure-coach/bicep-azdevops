@@ -88,6 +88,7 @@ Write-Progress -Message "Configure execution environment" -Status "Started"
     }
     elseif (Test-Path 'env:GITHUB_ACTION') {
         Write-Info -Key "Environment" -Value "GitHub Actions"
+        Write-Info -Key "GitHub Run Id" -Value $env:GITHUB_RUN_ID
         $releaseId = $env:GITHUB_RUN_ID-$env:GITHUB_RUN_NUMBER
         $releaseUrl = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
     }
