@@ -24,3 +24,21 @@ jobs:
       environment: dev
     secrets:
       azCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      
+  deploy-to-tst:
+    name: Deploy to TST
+    needs: deploy-to-dev
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: tst
+    secrets:
+      azCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+      
+  deploy-to-prd:
+    name: Deploy to PRD
+    needs: deploy-to-tst
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: prd
+    secrets:
+      azCredentials: ${{ secrets.AZURE_CREDENTIALS }}
