@@ -79,6 +79,24 @@ Write-Progress -Message "Configure execution environment" -Status "Started"
         Write-Info -Key "Parameter >> $($parameter.name)" -Value $parameter.value.value
     }
 
+    Write-Action -Value "Retrieve release info"
+    if (Test-Path 'env:Agent_Id')
+    {
+        Write-Info -Key "Environment" -Value "Azure DevOps Pipelines"
+        $releaseId = $env:BUILD_BUILDID
+        $releaseUrl = "$($env:SYSTEM_COLLECTIONURI)$($env:SYSTEM_TEAMPROJECT)/_build/results?buildId=$($env:BUILD_BUILDID)&view=results"
+    }
+    elseif (Test-Path 'env:GITHUB_ACTION') {
+        Write-Info -Key "Environment" -Value "GitHub Actions"
+        $releaseId = $env:GITHUB_RUN_ID
+        $releaseUrl = "$($env:GITHUB_SERVER_URL)/$($env:GITHUB_REPOSITORY)/actions/runs/$($env:GITHUB_RUN_ID)"
+    }
+    else {
+        Write-Info -Key "Environment" -Value "Local execution"
+        $releaseId = New-Guid
+        $releaseUrl = "None"
+    }
+
 Write-Progress -Status "Completed"
 #endregion
 
@@ -95,17 +113,22 @@ Write-Progress -Message "Deploy infrastructure with Bicep" -Status "Started"
 
     Write-Action -Value "Validate Bicep deployment"
     if(!($whatIfResult = az deployment sub what-if  `
+        --name "infra-$releaseId" `
         --template-file infra.bicep `
         --parameters "infra.parameters.$environment.json" `
+        --parameters "releaseUrl=$env:releaseUrl" `
+        --parameters "releaseId=$env:releaseId" `
         --location "$env:location" `
         --no-pretty-print `
         --only-show-errors)){ Write-Error "$ExceptionMessage" }
 
     Write-Action -Value "Deploy Bicep file to subscription"
     if(!($deploymentResult = az deployment sub create  `
-        --name "infra-$env:releaseId" `
+        --name "infra-$releaseId" `
         --template-file infra.bicep `
         --parameters "infra.parameters.$environment.json" `
+        --parameters "releaseUrl=$env:releaseUrl" `
+        --parameters "releaseId=$env:releaseId" `
         --location "$env:location" `
         --only-show-errors)){ Write-Error "$ExceptionMessage" }
     $result = $deploymentResult | ConvertFrom-Json
@@ -124,7 +147,8 @@ Write-Progress -Status "Completed"
 #region Pre-deployment scripts
 Write-Progress -Message "Excecute post-deployment scripts" -Status "Started"
 
-    Write-Action -Value "No scripts to execute"
+    Write-Action -Value "Restart App Service to refresh Key Vault references"
+    az webapp restart --name $env:appServiceName --resource-group $env:resourceGroupName
 
 Write-Progress -Status "Completed"
 #endregion

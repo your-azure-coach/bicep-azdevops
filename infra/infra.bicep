@@ -46,6 +46,8 @@ param appServicePlanSku string
 ])
 @description('Provide location for all resources')
 param location string = 'westeurope'
+@description('Provide an URL to the release pipeline')
+param releaseUrl string = 'NA'
 @description('Provide unique identifier for release')
 param releaseId string = newGuid()
 
@@ -80,7 +82,8 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01'  = {
   tags: {
     environment: env
     application: applicationName
-    owner: 'toon.vanhoutte@noest.it'
+    owner: 'toon@yourazurecoach.com'
+    releaseUrl: releaseUrl
   }
 }
 
@@ -125,9 +128,9 @@ module keyVault 'modules/keyvault.bicep' = {
   params: {
     location: location
     name: keyVaultName
-    secrets: {
-      '${storageAccountConnectionStringSecretName}' : 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${listKeys('${resourceGroup.id}/providers/Microsoft.Storage/storageAccounts/${storageAccountName}','2019-06-01').keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
-    }
+    // secrets: {
+    //   '${storageAccountConnectionStringSecretName}' : 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${listKeys('${resourceGroup.id}/providers/Microsoft.Storage/storageAccounts/${storageAccountName}','2019-06-01').keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
+    // }
     roleAssignments: [
       {
         roleId: '4633458b-17de-408a-b874-0445c86b69e6'
@@ -139,3 +142,9 @@ module keyVault 'modules/keyvault.bicep' = {
     storageAccount
   ]
 }
+
+//Define outputs
+output resourceGroupName string = resourceGroupName
+output appServiceName string = appServiceName
+output appServicePlanName string = appServicePlanName
+output storageAccountName string = storageAccountName

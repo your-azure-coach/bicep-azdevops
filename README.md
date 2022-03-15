@@ -6,11 +6,12 @@ MUST HAVE
 - Fix first time deploy
 - Unique id
 - Restart app service
+- Update documentation
 
 SHOULD HAVE
 - DevOps URL
 - Dynamic name for app service via output
-- Restart app service on first deploy
+- Restart app service only on first deploy
 
 
 ## Prerequisites
