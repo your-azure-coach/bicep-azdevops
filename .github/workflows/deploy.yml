@@ -21,16 +21,16 @@ jobs:
       with:
         creds: ${{ secrets.azCredentials }} 
     
- #   - name: Download infra artifact
- #     uses: actions/download-artifact@v3
- #     with:
- #       name: infra
- #       path: infra
+    - name: Download infra artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: infra
+        path: infra
         
-#    - name: Deploy infra with Bicep
-#      shell: pwsh
-#      run: ./_infra.ps1 -environment dev
-#      working-directory: ./infra
+    - name: Deploy infra with Bicep
+      shell: pwsh
+      run: ./_infra.ps1 -environment dev
+      working-directory: ./infra
 
     - name: Download app artifact
       uses: actions/download-artifact@v3
