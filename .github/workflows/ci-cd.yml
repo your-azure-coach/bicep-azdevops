@@ -22,3 +22,5 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       environment: dev
+    secrets:
+      azCredentials: ${{ secrets.AZURE_CREDENTIALS }}
