@@ -108,7 +108,7 @@ module appService 'modules/appservice.bicep' = {
       {
         name: 'BLOB_CONNECTIONSTRING'
         value: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}${environment().suffixes.keyvaultDns}/secrets/${storageAccountConnectionStringSecretName}/)'
-      },
+      }
       {
         name: 'ASPNETCORE_ENVIRONMENT'
         value: 'Development'
