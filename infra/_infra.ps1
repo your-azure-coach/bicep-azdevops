@@ -88,8 +88,8 @@ Write-Progress -Message "Configure execution environment" -Status "Started"
     }
     elseif (Test-Path 'env:GITHUB_ACTION') {
         Write-Info -Key "Environment" -Value "GitHub Actions"
-        $releaseId = $env:GITHUB_RUN_ID
-        $releaseUrl = "$($env:GITHUB_SERVER_URL)/$($env:GITHUB_REPOSITORY)/actions/runs/$($env:GITHUB_RUN_ID)"
+        $releaseId = $env:GITHUB_RUN_ID-$env:GITHUB_RUN_NUMBER
+        $releaseUrl = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
     }
     else {
         Write-Info -Key "Environment" -Value "Local execution"
@@ -113,7 +113,7 @@ Write-Progress -Message "Deploy infrastructure with Bicep" -Status "Started"
 
     Write-Action -Value "Validate Bicep deployment"
     if(!($whatIfResult = az deployment sub what-if  `
-        --name "infra-$releaseId" `
+        --name "infra-$env:environment-$releaseId" `
         --template-file infra.bicep `
         --parameters "infra.parameters.$environment.json" `
         --parameters "releaseUrl=$env:releaseUrl" `
@@ -124,7 +124,7 @@ Write-Progress -Message "Deploy infrastructure with Bicep" -Status "Started"
 
     Write-Action -Value "Deploy Bicep file to subscription"
     if(!($deploymentResult = az deployment sub create  `
-        --name "infra-$releaseId" `
+        --name "infra-$env:environment-$releaseId" `
         --template-file infra.bicep `
         --parameters "infra.parameters.$environment.json" `
         --parameters "releaseUrl=$env:releaseUrl" `

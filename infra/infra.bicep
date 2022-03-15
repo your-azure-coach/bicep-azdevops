@@ -128,9 +128,9 @@ module keyVault 'modules/keyvault.bicep' = {
   params: {
     location: location
     name: keyVaultName
-    // secrets: {
-    //   '${storageAccountConnectionStringSecretName}' : 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${listKeys('${resourceGroup.id}/providers/Microsoft.Storage/storageAccounts/${storageAccountName}','2019-06-01').keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
-    // }
+    secrets: {
+      '${storageAccountConnectionStringSecretName}' : 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${listKeys('${resourceGroup.id}/providers/Microsoft.Storage/storageAccounts/${storageAccountName}','2019-06-01').keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
+    }
     roleAssignments: [
       {
         roleId: '4633458b-17de-408a-b874-0445c86b69e6'
