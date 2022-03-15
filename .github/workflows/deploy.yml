@@ -29,7 +29,7 @@ jobs:
     - name: Deploy infra with Bicep
       shell: pwsh
       run: ./_infra.ps1 -environment dev
-      working-directory: ./infra
+      working-directory: infra
 
     - name: Download app artifact
       uses: actions/download-artifact@v3
