@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "env": {
-        "value": "tvh"
+        "value": "dev"
     },
     "storageAccountSku": {
         "value": "Standard_LRS"
