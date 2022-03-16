@@ -5,7 +5,6 @@ This demo showcases how you can create an Azure PaaS solution with Bicep.
 MUST HAVE
 - Fix first time deploy
 - Unique id
-- Restart app service
 - Update documentation
 
 SHOULD HAVE
