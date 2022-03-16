@@ -92,8 +92,8 @@ Write-Progress -Message "Configure execution environment" -Status "Started"
         Write-Info -Key "GitHub Run Number" -Value $env:GITHUB_RUN_NUMBER
         Write-Info -Key "GitHub Server Url" -Value $env:GITHUB_SERVER_URL
         Write-Info -Key "GitHub Repository" -Value $env:GITHUB_REPOSITORY
-        $releaseId = $env:GITHUB_RUN_ID-$env:GITHUB_RUN_NUMBER
-        $releaseUrl = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
+        Write-Info -Key "Release Id" -Value ($releaseId = $env:GITHUB_RUN_ID-$env:GITHUB_RUN_NUMBER)
+        Write-Info -Key "Release Url" -Value ($releaseUrl = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID")
     }
     else {
         Write-Info -Key "Environment" -Value "Local execution"
