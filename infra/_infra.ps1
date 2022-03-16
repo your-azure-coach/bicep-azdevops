@@ -114,7 +114,7 @@ Write-Progress -Message "Deploy infrastructure with Bicep" -Status "Started"
 
     Write-Action -Value "Validate Bicep deployment"
     if(!($whatIfResult = az deployment sub what-if  `
-        --name "infra-$env:environment-$releaseId" `
+        --name "infra-$env:environment-$releaseId" ` 
         --template-file infra.bicep `
         --parameters "infra.parameters.$environment.json" `
         --parameters "releaseUrl=$env:releaseUrl" `
