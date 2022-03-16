@@ -97,8 +97,8 @@ Write-Progress -Message "Configure execution environment" -Status "Started"
     }
     else {
         Write-Info -Key "Environment" -Value "Local execution"
-        $releaseId = New-Guid
-        $releaseUrl = "None"
+        Write-Info -Key "Release Id" -Value ($releaseId = New-Guid)
+        Write-Info -Key "Release Url" -Value ($releaseUrl = "None")
     }
 
 Write-Progress -Status "Completed"
@@ -117,22 +117,22 @@ Write-Progress -Message "Deploy infrastructure with Bicep" -Status "Started"
 
     Write-Action -Value "Validate Bicep deployment"
     if(!($whatIfResult = az deployment sub what-if  `
-        --name "infra-$env:environment-$releaseId" `
+        --name "infra-$environment-$releaseId" `
         --template-file infra.bicep `
         --parameters "infra.parameters.$environment.json" `
-        --parameters "releaseUrl=$env:releaseUrl" `
-        --parameters "releaseId=$env:releaseId" `
+        --parameters releaseUrl=$releaseUrl `
+        --parameters releaseId=$releaseId `
         --location "$env:location" `
         --no-pretty-print `
         --only-show-errors)){ Write-Error "$ExceptionMessage" }
 
     Write-Action -Value "Deploy Bicep file to subscription"
     if(!($deploymentResult = az deployment sub create  `
-        --name "infra-$env:environment-$releaseId" `
+        --name "infra-$environment-$releaseId" `
         --template-file infra.bicep `
         --parameters "infra.parameters.$environment.json" `
-        --parameters "releaseUrl=$env:releaseUrl" `
-        --parameters "releaseId=$env:releaseId" `
+        --parameters releaseUrl=$releaseUrl `
+        --parameters releaseId=$releaseId `
         --location "$env:location" `
         --only-show-errors)){ Write-Error "$ExceptionMessage" }
     $result = $deploymentResult | ConvertFrom-Json
