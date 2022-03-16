@@ -80,7 +80,7 @@ Write-Progress -Message "Configure execution environment" -Status "Started"
     }
 
     Write-Action -Value "Retrieve release info"
-    $guid = New-Guid
+    $guid = [guid]::NewGuid().Guid
     if (Test-Path 'env:Agent_Id')
     {
         Write-Info -Key "Environment" -Value "Azure DevOps Pipelines"
