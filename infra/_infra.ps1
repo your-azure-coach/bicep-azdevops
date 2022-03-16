@@ -83,16 +83,13 @@ Write-Progress -Message "Configure execution environment" -Status "Started"
     if (Test-Path 'env:Agent_Id')
     {
         Write-Info -Key "Environment" -Value "Azure DevOps Pipelines"
-        $releaseId = $env:BUILD_BUILDID
-        $releaseUrl = "$($env:SYSTEM_COLLECTIONURI)$($env:SYSTEM_TEAMPROJECT)/_build/results?buildId=$($env:BUILD_BUILDID)&view=results"
+        Write-Info -Key "Release Id" -Value ($releaseId = $env:BUILD_BUILDID-(New-Guid))
+        Write-Info -Key "Release Url" -Value ($releaseUrl = "$($env:SYSTEM_COLLECTIONURI)$($env:SYSTEM_TEAMPROJECT)/_build/results?buildId=$($env:BUILD_BUILDID)&view=results")
+
     }
     elseif (Test-Path 'env:GITHUB_ACTION') {
         Write-Info -Key "Environment" -Value "GitHub Actions"
-        Write-Info -Key "GitHub Run Id" -Value $env:GITHUB_RUN_ID
-        Write-Info -Key "GitHub Run Number" -Value $env:GITHUB_RUN_NUMBER
-        Write-Info -Key "GitHub Server Url" -Value $env:GITHUB_SERVER_URL
-        Write-Info -Key "GitHub Repository" -Value $env:GITHUB_REPOSITORY
-        Write-Info -Key "Release Id" -Value ($releaseId = $env:GITHUB_RUN_ID-$env:GITHUB_RUN_NUMBER)
+        Write-Info -Key "Release Id" -Value ($releaseId = $env:GITHUB_RUN_ID-$env:GITHUB_RUN_NUMBER-(New-Guid))
         Write-Info -Key "Release Url" -Value ($releaseUrl = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID")
     }
     else {
@@ -151,7 +148,7 @@ Write-Progress -Status "Completed"
 #region Pre-deployment scripts
 Write-Progress -Message "Excecute post-deployment scripts" -Status "Started"
 
-    Write-Action -Value "Restart App Service to refresh Key Vault references"
+    Write-Action -Value "Restart App Service to refresh Key Vault references (example)"
     az webapp restart --name $env:appServiceName --resource-group $env:resourceGroupName
 
 Write-Progress -Status "Completed"

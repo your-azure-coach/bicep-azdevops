@@ -86,45 +86,45 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01'  = {
   }
 }
 
-// //Describe Storage Account
-// module storageAccount 'modules/storageaccount.bicep' = {
-//   scope: resourceGroup
-//   name: 'storageAccount-${releaseId}'
-//   params: {
-//     name: storageAccountName
-//     location: location
-//     sku: storageAccountSku    
-//     blobContainers: blobContainers
-//     roleAssignments: [
-//       {
-//         principalId: appService.outputs.identityPrincipalId
-//         roleId: storageBlobDataContributorRoleId
-//       }
-//     ]
-//   }
-// }
+//Describe Storage Account
+module storageAccount 'modules/storageaccount.bicep' = {
+  scope: resourceGroup
+  name: 'storageAccount-${releaseId}'
+  params: {
+    name: storageAccountName
+    location: location
+    sku: storageAccountSku    
+    blobContainers: blobContainers
+    roleAssignments: [
+      {
+        principalId: appService.outputs.identityPrincipalId
+        roleId: storageBlobDataContributorRoleId
+      }
+    ]
+  }
+}
 
-// //Describe App Service
-// module appService 'modules/appservice.bicep' = {
-//   scope: resourceGroup
-//   name: 'appService-${releaseId}'
-//   params: {
-//     name: appServiceName
-//     planName: appServicePlanName
-//     planSku: appServicePlanSku
-//     appSettings: [
-//       {
-//         name: 'STORAGE_ACCOUNT_NAME'
-//         value: storageAccountName
-//       }
-//       {
-//         name: 'ASPNETCORE_ENVIRONMENT'
-//         value: 'Development'
-//       }
-//     ]
-//     location: location
-//   }
-// }
+//Describe App Service
+module appService 'modules/appservice.bicep' = {
+  scope: resourceGroup
+  name: 'appService-${releaseId}'
+  params: {
+    name: appServiceName
+    planName: appServicePlanName
+    planSku: appServicePlanSku
+    appSettings: [
+      {
+        name: 'STORAGE_ACCOUNT_NAME'
+        value: storageAccountName
+      }
+      {
+        name: 'ASPNETCORE_ENVIRONMENT'
+        value: 'Development'
+      }
+    ]
+    location: location
+  }
+}
 
 /* ########################################## Outputs ############################################ */
 
