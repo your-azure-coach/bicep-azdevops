@@ -80,21 +80,22 @@ Write-Progress -Message "Configure execution environment" -Status "Started"
     }
 
     Write-Action -Value "Retrieve release info"
+    $guid = New-Guid
     if (Test-Path 'env:Agent_Id')
     {
         Write-Info -Key "Environment" -Value "Azure DevOps Pipelines"
-        Write-Info -Key "Release Id" -Value ($releaseId = $env:BUILD_BUILDID-(New-Guid))
+        Write-Info -Key "Release Id" -Value ($releaseId = $env:BUILD_BUILDID-$guid)
         Write-Info -Key "Release Url" -Value ($releaseUrl = "$($env:SYSTEM_COLLECTIONURI)$($env:SYSTEM_TEAMPROJECT)/_build/results?buildId=$($env:BUILD_BUILDID)&view=results")
 
     }
     elseif (Test-Path 'env:GITHUB_ACTION') {
         Write-Info -Key "Environment" -Value "GitHub Actions"
-        Write-Info -Key "Release Id" -Value ($releaseId = $env:GITHUB_RUN_ID-$env:GITHUB_RUN_NUMBER-(New-Guid))
+        Write-Info -Key "Release Id" -Value ($releaseId = $env:GITHUB_RUN_ID-$env:GITHUB_RUN_NUMBER-$guid)
         Write-Info -Key "Release Url" -Value ($releaseUrl = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID")
     }
     else {
         Write-Info -Key "Environment" -Value "Local execution"
-        Write-Info -Key "Release Id" -Value ($releaseId = New-Guid)
+        Write-Info -Key "Release Id" -Value ($releaseId = $guid)
         Write-Info -Key "Release Url" -Value ($releaseUrl = "None")
     }
 
