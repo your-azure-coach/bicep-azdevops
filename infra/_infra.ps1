@@ -2,7 +2,7 @@ param(
     [string]$environment = "dev"
 )
 
-#region Global Functions
+#region Global Functions 
 
 function Write-Info {
     [CmdletBinding()]
