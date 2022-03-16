@@ -29,7 +29,12 @@ namespace DocumentApp.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAzureClients(builder => {
-                builder.AddBlobServiceClient(Configuration.GetValue<string>("BLOB_CONNECTIONSTRING"));
+                var credential = new ChainedTokenCredential(
+                    new ManagedIdentityCredential(),
+                    new AzureCliCredential());
+
+                builder.AddBlobServiceClient(new Uri($"https://{Configuration.GetValue<string>("STORAGE_ACCOUNT_NAME")}.blob.core.windows.net"));
+                builder.UseCredential(credential);
             });
 
             services.AddControllers();

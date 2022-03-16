@@ -59,8 +59,7 @@ var resourceGroupName = '${prefix}-rg'
 var appServiceName = '${prefix}-app'
 var appServicePlanName = '${prefix}-app-plan'
 var storageAccountName = '${replace(prefix, '-', '')}st'
-var keyVaultName = '${prefix}-kv'
-var storageAccountConnectionStringSecretName = '${storageAccountName}-connectionstring'
+var storageBlobDataContributorRoleId = 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
 var blobContainers = [
   {
     name: 'manuals'
@@ -93,9 +92,15 @@ module storageAccount 'modules/storageaccount.bicep' = {
   name: 'storageAccount-${releaseId}'
   params: {
     name: storageAccountName
+    location: location
     sku: storageAccountSku    
     blobContainers: blobContainers
-    location: location
+    roleAssignments: [
+      {
+        principalId: appService.outputs.identityPrincipalId
+        roleId: storageBlobDataContributorRoleId
+      }
+    ]
   }
 }
 
@@ -109,8 +114,8 @@ module appService 'modules/appservice.bicep' = {
     planSku: appServicePlanSku
     appSettings: [
       {
-        name: 'BLOB_CONNECTIONSTRING'
-        value: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}${environment().suffixes.keyvaultDns}/secrets/${storageAccountConnectionStringSecretName}/)'
+        name: 'STORAGE_ACCOUNT_NAME'
+        value: storageAccountName
       }
       {
         name: 'ASPNETCORE_ENVIRONMENT'
@@ -121,29 +126,8 @@ module appService 'modules/appservice.bicep' = {
   }
 }
 
-//Describe Key Vault
-module keyVault 'modules/keyvault.bicep' = {
-  scope: resourceGroup
-  name: 'keyVault-${releaseId}'
-  params: {
-    location: location
-    name: keyVaultName
-    secrets: {
-      '${storageAccountConnectionStringSecretName}' : 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${listKeys('${resourceGroup.id}/providers/Microsoft.Storage/storageAccounts/${storageAccountName}','2019-06-01').keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
-    }
-    roleAssignments: [
-      {
-        roleId: '4633458b-17de-408a-b874-0445c86b69e6'
-        principalId: appService.outputs.identityPrincipalId
-      }
-    ]
-  }
-  dependsOn: [
-    storageAccount
-  ]
-}
+/* ########################################## Outputs ############################################ */
 
-//Define outputs
 output resourceGroupName string = resourceGroupName
 output appServiceName string = appServiceName
 output appServicePlanName string = appServicePlanName
