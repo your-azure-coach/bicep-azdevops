@@ -2,12 +2,6 @@
 
 This demo showcases how you can create an Azure PaaS solution with Bicep.
 
-MUST HAVE
-- Update documentation
-
-SHOULD HAVE
-- Dynamic name for app service via output
-
 ## Prerequisites
 
 * Have Azure CLI installed
@@ -17,7 +11,6 @@ SHOULD HAVE
 ```
 az bicep install
 ```
-
 
 ## Create  bicep file
 
