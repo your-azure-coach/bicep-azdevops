@@ -44,7 +44,7 @@ namespace DocumentApp.Api.Controllers
                 await blob.UploadAsync(new BinaryData(ms.ToArray()));
             }
 
-            var response = JsonDocument.Parse("{\"id\": \"" + blob.Name + "\", \"message\": \"" + _config.GetValue<string>("DOCUMENT_RESPONSE_MESSAGE", "Thank you so much for your document!") + "\"}");
+            var response = JsonDocument.Parse("{\"id\": \"" + blob.Name + "\", \"message\": \"" + _config.GetValue<string>("DOCUMENT_RESPONSE_MESSAGE", "Thank you very much for your document!") + "\"}");
             return Ok(response);
         }
 
